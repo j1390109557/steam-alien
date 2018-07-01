@@ -2,10 +2,10 @@ import requests
 import json
 import time
 plant_list = []
-access_token = ''
+access_token = 'fe8ff1a4aa28101fbd1908e2ab9a5c38'
 room_id = 0
 count = 1
-plant_id =38
+plant_id =508
 difficultys_list = ['低','中','高']
 def play_game():
         play_games = requests.post('https://community.steam-api.com/ITerritoryControlMinigameService/GetPlayerInfo/v0001/',data = {'access_token':access_token})
@@ -50,13 +50,19 @@ def send_score(score):
         time.sleep(110)
         get_score = requests.post('https://community.steam-api.com/ITerritoryControlMinigameService/ReportScore/v0001/',data = {'access_token':access_token,'score':score,'language':'schinese'})
         score = get_score.json()["response"]
-        #分数
-        new_score = score['new_score']
-        #等级
-        new_level = score["new_level"]
-        #下一级需要分数
-        next_score = score["next_level_score"]
-        print('新等级 {} ，当前经验值 {} ,升到 {} 级需要经验 {} ,还差 {} 经验'.format(new_level,new_score,str(int(new_level)+int(1)),next_score,int(next_score) - int(new_score)))
+        try:
+                #分数
+                new_score = score['new_score']
+                #等级
+                new_level = score["new_level"]
+                #下一级需要分数
+                next_score = score["next_level_score"]
+                print('新等级 {} ，当前经验值 {} ,升到 {} 级需要经验 {} ,还差 {} 经验'.format(new_level,new_score,str(int(new_level)+int(1)),next_score,int(next_score) - int(new_score)))
+        except KeyError:
+                print('分数发送失败，可能是由于您登陆了网页版，正在重试')
+                get_plant()
+                go_room()
+                send_score(score)
 def select_room():
         global room_id
         global count
